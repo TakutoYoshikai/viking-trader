@@ -6,7 +6,7 @@ type RmtItem struct {
   OwnerBankUsername string
   Rarity int
   Name string
-  IsBought bool
+  Status int
   Price uint64
   TransferRequest *TransferRequest
   BuyerGameUsername string
