@@ -3,6 +3,7 @@ package test
 import (
   "testing"
   "viking-trader/bot"
+  "viking-trader/util"
 )
 
 func TestBot(t *testing.T) {
@@ -93,6 +94,10 @@ func TestBot(t *testing.T) {
   item = botA.CreateRmtItem(item.GameItemId, 100)
   if item != nil {
     t.Error("持っていないアイテムを売りに出せている")
+  }
+  items := util.GetAllItems()
+  if items == nil || len(*items) == 0{
+    t.Error("RmtItemの一覧が取得できていない")
   }
   t.Log("Bot終了")
 }

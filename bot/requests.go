@@ -6,13 +6,11 @@ import (
   "encoding/json"
   "strconv"
   "viking-trader/model"
+  "viking-trader/config"
 )
-var bankHost string = "http://localhost:8081"
-var gameHost string = "http://localhost:8080"
-var rmtHost string = "http://localhost:8082"
 
 func BankLoginRequest(bankUsername string, bankPassword string) *model.BankAccount {
-  url := bankHost + "/users/" + bankUsername + "/" + bankPassword
+  url := config.BankHost + "/users/" + bankUsername + "/" + bankPassword
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return nil
@@ -32,7 +30,7 @@ func BankLoginRequest(bankUsername string, bankPassword string) *model.BankAccou
 }
 
 func GameLoginRequest(gameUsername string, gamePassword string) *model.GameAccount {
-  url := gameHost + "/users/" + gameUsername + "/" + gamePassword
+  url := config.GameHost + "/users/" + gameUsername + "/" + gamePassword
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return nil
@@ -52,7 +50,7 @@ func GameLoginRequest(gameUsername string, gamePassword string) *model.GameAccou
 }
 
 func CreateRmtItemRequest(gameUsername string, gameItemId int, bankUsername string, price int) *model.RmtItem {
-  url := rmtHost + "/item/create/" + bankUsername + "/" + gameUsername + "/" + strconv.Itoa(gameItemId) + "/" + strconv.Itoa(price)
+  url := config.RmtHost + "/item/create/" + bankUsername + "/" + gameUsername + "/" + strconv.Itoa(gameItemId) + "/" + strconv.Itoa(price)
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return nil
@@ -73,7 +71,7 @@ func CreateRmtItemRequest(gameUsername string, gameItemId int, bankUsername stri
 }
 
 func BuyRequest(itemId int, bankUsername string, gameUsername string) *model.TransferRequest {
-  url := rmtHost + "/item/buy/" + strconv.Itoa(itemId) + "/" + bankUsername + "/" + gameUsername
+  url := config.RmtHost + "/item/buy/" + strconv.Itoa(itemId) + "/" + bankUsername + "/" + gameUsername
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return nil
@@ -94,7 +92,7 @@ func BuyRequest(itemId int, bankUsername string, gameUsername string) *model.Tra
 
 
 func SendGameItemRequest(gameUsername string, gamePassword string, gameItemId int, to string) bool {
-  url := gameHost + "/send/" + gameUsername + "/" + gamePassword + "/" + strconv.Itoa(gameItemId) + "/" + to
+  url := config.GameHost + "/send/" + gameUsername + "/" + gamePassword + "/" + strconv.Itoa(gameItemId) + "/" + to
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return false
@@ -105,7 +103,7 @@ func SendGameItemRequest(gameUsername string, gamePassword string, gameItemId in
 
 
 func SentRequest(itemId int) bool {
-  url := rmtHost + "/item/sent/" + strconv.Itoa(itemId)
+  url := config.RmtHost + "/item/sent/" + strconv.Itoa(itemId)
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return false
@@ -115,7 +113,7 @@ func SentRequest(itemId int) bool {
 }
 
 func TransferReq(bankUsername string, bankPassword string, requestId int) bool {
-  url := bankHost + "/requests/transfer/" + bankUsername + "/" + bankPassword + "/" + strconv.Itoa(requestId)
+  url := config.BankHost + "/requests/transfer/" + bankUsername + "/" + bankPassword + "/" + strconv.Itoa(requestId)
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return false
