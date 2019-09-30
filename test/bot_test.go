@@ -48,6 +48,10 @@ func TestBot(t *testing.T) {
   if item == nil {
     t.Error("rmtのitemを作成できなかった")
   }
+  dummyItem := botA.CreateRmtItem(botA.GameItems[0].Id, 100)
+  if dummyItem != nil {
+    t.Error("出品されているアイテムをまた出品できてしまった")
+  }
   itemId := item.Id
   transferRequest := botB.Buy(itemId)
   if transferRequest == nil {
@@ -85,6 +89,10 @@ func TestBot(t *testing.T) {
   botA.FetchBalance()
   if botABalance >= botA.Balance {
     t.Error("出品者が報酬をうけとってない")
+  }
+  item = botA.CreateRmtItem(item.GameItemId, 100)
+  if item != nil {
+    t.Error("持っていないアイテムを売りに出せている")
   }
   t.Log("Bot終了")
 }
