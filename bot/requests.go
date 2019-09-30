@@ -52,7 +52,7 @@ func GameLoginRequest(gameUsername string, gamePassword string) *model.GameAccou
 }
 
 func CreateRmtItemRequest(gameUsername string, gameItemId int, bankUsername string, price int) *model.RmtItem {
-  url := rmtHost + "/item/create/" + gameUsername + "/" + strconv.Itoa(gameItemId) + "/" + strconv.Itoa(price)
+  url := rmtHost + "/item/create/" + bankUsername + "/" + gameUsername + "/" + strconv.Itoa(gameItemId) + "/" + strconv.Itoa(price)
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return nil

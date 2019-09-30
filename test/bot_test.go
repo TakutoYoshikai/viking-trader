@@ -49,16 +49,16 @@ func TestBot(t *testing.T) {
     t.Error("rmtのitemを作成できなかった")
   }
   itemId := item.Id
-  transferRequest := botA.Buy(itemId)
-  if transferRequest != nil {
-    t.Error("自分の商品を自分で買えてしまった")
-  }
-  transferRequest = botB.Buy(itemId)
+  transferRequest := botB.Buy(itemId)
   if transferRequest == nil {
     t.Error("商品を買えなかった")
   }
   success := botB.Transfer(transferRequest)
-  if !success || botB.Balance != botBBalance - transferRequest.Amount {
+  if !success {
+    t.Error("振込に失敗した")
+  }
+  botB.FetchBalance()
+  if botB.Balance != botBBalance - transferRequest.Amount {
     t.Error("振込んでも残高が適切にかわらなかった")
   }
   success = botA.SendGameItem(item.GameItemId, "rmt")
