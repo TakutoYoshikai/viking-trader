@@ -66,6 +66,10 @@ func TestBot(t *testing.T) {
   if botB.Balance != botBBalance - transferRequest.Amount {
     t.Error("振込んでも残高が適切にかわらなかった")
   }
+  success = botB.Transfered(item.Id)
+  if !success {
+    t.Error("送金したことの報告に失敗した")
+  }
   success = botA.SendGameItem(item.GameItemId, "rmt")
   if !success {
     t.Error("アイテムを送信できなかった")

@@ -12,10 +12,13 @@ import (
 func BankLoginRequest(bankUsername string, bankPassword string) *model.BankAccount {
   url := config.BankHost + "/users/" + bankUsername + "/" + bankPassword
   res, err := http.Get(url)
-  if err != nil || res.StatusCode != 200 {
+  if err != nil {
     return nil
   }
   defer res.Body.Close()
+  if res.StatusCode != 200 {
+    return nil
+  }
   body, err := ioutil.ReadAll(res.Body)
   if err != nil {
     return nil
@@ -114,6 +117,16 @@ func SentRequest(itemId int) bool {
 
 func TransferReq(bankUsername string, bankPassword string, requestId int) bool {
   url := config.BankHost + "/requests/transfer/" + bankUsername + "/" + bankPassword + "/" + strconv.Itoa(requestId)
+  res, err := http.Get(url)
+  if err != nil || res.StatusCode != 200 {
+    return false
+  }
+  defer res.Body.Close()
+  return true
+}
+
+func TransferedRequest(itemId int) bool{
+  url := config.RmtHost + "/item/transfered/" + strconv.Itoa(itemId)
   res, err := http.Get(url)
   if err != nil || res.StatusCode != 200 {
     return false

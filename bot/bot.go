@@ -2,6 +2,8 @@ package bot
 
 import (
   "viking-trader/model"
+  "viking-trader/util"
+  "math/rand"
 )
 
 
@@ -12,7 +14,11 @@ type Bot struct {
   BankPassword string
   Balance int
   GameItems model.GameItems
+  RmtItems model.RmtItems
+  Orders []int
 }
+
+type Bots []*Bot
 
 
 func (bot *Bot) FetchBalance() bool {
@@ -34,7 +40,11 @@ func (bot *Bot) FetchGameItem() bool {
 }
 
 func (bot *Bot) CreateRmtItem(gameItemId int, price int) *model.RmtItem {
-  return CreateRmtItemRequest(bot.GameUsername, gameItemId, bot.BankUsername, price)
+  rmtItem := CreateRmtItemRequest(bot.GameUsername, gameItemId, bot.BankUsername, price)
+  if rmtItem != nil {
+    bot.Orders = append(bot.Orders, rmtItem.Id)
+  }
+  return rmtItem
 }
 
 func (bot *Bot) Buy(itemId int) *model.TransferRequest {
@@ -79,5 +89,72 @@ func Login(gameUsername string, gamePassword string, bankUsername string, bankPa
     BankPassword: bankPassword,
     Balance: bankAccount.Balance,
     GameItems: gameAccount.Items,
+  }
+}
+
+func doIt(p float32) bool {
+  n := rand.Intn(100)
+  if n < int(p * 100) {
+    return true
+  }
+  return false
+}
+
+func (bot *Bot) Transfered (itemId int) bool {
+  return TransferedRequest(itemId)
+}
+
+func (bot *Bot) OrdersTransfered() model.RmtItems {
+  var result model.RmtItems = model.RmtItems{}
+  for _, itemId := range bot.Orders {
+    item := util.GetItem(itemId)
+    if item == nil {
+      continue
+    }
+    if item.Status == model.ItemStatusTransfered {
+      result = append(result, *item)
+    }
+  }
+  return result
+}
+
+
+
+func (bot *Bot) RandomAction() {
+  if !bot.FetchGameItem() {
+    return
+  }
+  items := util.GetAllItems()
+  for _, gameItem := range bot.GameItems {
+    if doIt(0.3) {
+      bot.CreateRmtItem(gameItem.Id, gameItem.Rarity * 1000)
+    }
+    if items == nil {
+      return
+    }
+  }
+  if doIt(0.3) {
+    if len(*items) == 0 {
+      return
+    }
+    item := (*items)[rand.Intn(len(*items))]
+    if item.OwnerGameUsername == bot.GameUsername {
+      return
+    }
+    if item.Status != model.ItemStatusSale {
+      return
+    }
+    transferRequest := bot.Buy(item.Id)
+    if transferRequest == nil {
+      return
+    }
+    success := bot.Transfer(transferRequest)
+    if !success {
+      return
+    }
+    success = bot.Transfered(item.Id)
+    if !success {
+      return
+    }
   }
 }
