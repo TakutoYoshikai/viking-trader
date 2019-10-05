@@ -5,6 +5,7 @@ import (
   "viking-trader/util"
   "math/rand"
   "math"
+  "github.com/thoas/go-funk"
 )
 
 
@@ -125,29 +126,26 @@ func (bot *Bot) RandomAction() {
   if !bot.FetchGameItem() {
     return
   }
-  items := util.GetAllItems()
   for _, gameItem := range bot.GameItems {
     if doIt(0.3) {
       bot.CreateRmtItem(gameItem.Id, int(math.Pow(10, float64(gameItem.Rarity))))
     }
-    if items == nil {
-      return
-    }
+  }
+  items := util.GetAllItems()
+  if items == nil {
+    return
   }
   if doIt(0.3) {
     if len(*items) == 0 {
       return
     }
-    item := (*items)[rand.Intn(len(*items))]
-    if item.OwnerGameUsername == bot.GameUsername {
+    saleItems := funk.Filter(*items, func(item model.RmtItem) bool {
+      return item.Status == model.ItemStatusSale && item.OwnerGameUsername != bot.GameUsername && item.Price <= uint64(math.Pow(10, float64(item.Rarity)))
+    }).([]model.RmtItem)
+    if len(saleItems) == 0 {
       return
     }
-    if item.Status != model.ItemStatusSale {
-      return
-    }
-    if item.Price > uint64(math.Pow(10, float64(item.Rarity))) {
-      return
-    }
+    item := saleItems[rand.Intn(len(saleItems))]
     transferRequest := bot.Buy(item.Id)
     if transferRequest == nil {
       return
