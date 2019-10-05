@@ -4,6 +4,7 @@ import (
   "viking-trader/bot"
   "strconv"
   "fmt"
+  "time"
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
     }
     for i := 0; i < 50; i++ {
       for _, b := range bots {
+        time.Sleep(300 * time.Millisecond)
         ordersTransfered := b.OrdersTransfered()
         remainOrders := []int{}
         for _, item := range ordersTransfered {
