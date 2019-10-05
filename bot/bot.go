@@ -145,7 +145,7 @@ func (bot *Bot) RandomAction() {
     if item.Status != model.ItemStatusSale {
       return
     }
-    if float64(item.Price) > math.Pow(10, float64(item.Rarity)) {
+    if item.Price > uint64(math.Pow(10, float64(item.Rarity))) {
       return
     }
     transferRequest := bot.Buy(item.Id)
