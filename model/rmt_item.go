@@ -1,4 +1,7 @@
 package model
+import (
+  "time"
+)
 
 type RmtItem struct {
   Id int
@@ -11,6 +14,7 @@ type RmtItem struct {
   Price uint64
   TransferRequest *TransferRequest
   BuyerGameUsername string
+  CreatedAt time.Time
 }
 
 type RmtItems []RmtItem
