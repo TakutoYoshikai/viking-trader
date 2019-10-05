@@ -20,16 +20,20 @@ func main() {
     for i := 0; i < 50; i++ {
       for _, b := range bots {
         ordersTransfered := b.OrdersTransfered()
+        remainOrders := []int{}
         for _, item := range ordersTransfered {
           success := b.SendGameItem(item.GameItemId, "rmt")
           if !success {
+            remainOrders = append(remainOrders, item.Id)
             continue
           }
           success = b.Sent(item.Id)
           if !success {
+            remainOrders = append(remainOrders, item.Id)
             continue
           }
         }
+        b.Orders = remainOrders
         b.RandomAction()
       }
     }

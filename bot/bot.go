@@ -4,6 +4,7 @@ import (
   "viking-trader/model"
   "viking-trader/util"
   "math/rand"
+  "math"
 )
 
 
@@ -127,7 +128,7 @@ func (bot *Bot) RandomAction() {
   items := util.GetAllItems()
   for _, gameItem := range bot.GameItems {
     if doIt(0.3) {
-      bot.CreateRmtItem(gameItem.Id, gameItem.Rarity * 1000)
+      bot.CreateRmtItem(gameItem.Id, int(math.Pow(10, float64(gameItem.Rarity))))
     }
     if items == nil {
       return
@@ -142,6 +143,9 @@ func (bot *Bot) RandomAction() {
       return
     }
     if item.Status != model.ItemStatusSale {
+      return
+    }
+    if float64(item.Price) > math.Pow(10, float64(item.Rarity)) {
       return
     }
     transferRequest := bot.Buy(item.Id)
